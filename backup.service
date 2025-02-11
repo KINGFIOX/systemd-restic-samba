@@ -1,0 +1,13 @@
+[Unit]
+Description=Backup data.lan shares using restic
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/python3 /root/scripts/backup/main.py
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
