@@ -69,17 +69,36 @@ def restic_backup(src, repo, passwd):
         print("Backup completed successfully")
 
 
+def mount_sshfs(host, user, remote_dir, mountpoint):
+    subprocess.run(["mkdir", "-p", mountpoint])
+    sshfs = ["sshfs", "-o", "ro", f"{user}@{host}:{remote_dir}", mountpoint]
+    subprocess.run(sshfs)
+
+
 def main():
     # check if running as root
     assert os.getuid() == 0, "must run as root"
     assert os.getgid() == 0, "must run as root"
 
-    # set connection parameters
-    src = "/mnt/data.lan"
-    mount_share_p(host="data.lan", user="Administrator", passwd="admin123.", base=src)
+    repo_path = "/home/backup/repo"
+    repo_passwd = "22240076"
 
+    # set connection parameters
+    samba = "/mnt/data.lan"
+    mount_share_p(host="data.lan", user="Administrator", passwd="admin123.", base=samba)
     # restic backup
-    restic_backup(src, repo="/home/backup/data.lan", passwd="22240076")
+    restic_backup(samba, repo=repo_path, passwd=repo_passwd)
+
+    # mount sshfs
+    sshfs = "/mnt/kisserver.lan"
+    mount_sshfs(
+        host="kisserver.lan",
+        user="Administrator",
+        remote_dir="/V:/",
+        mountpoint=sshfs,
+    )
+    # restic backup
+    restic_backup(sshfs, repo=repo_path, passwd=repo_passwd)
 
 
 if __name__ == "__main__":
