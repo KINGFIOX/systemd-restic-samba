@@ -2,7 +2,7 @@
 Description=Weekly backup data.lan shares using restic
 
 [Timer]
-OnCalendar=Fri 23:00:00
+OnCalendar=Sat 23:00:00
 Persistent=true
 Unit=backup.service # this should be the name of the service file
 
